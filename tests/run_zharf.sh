@@ -1,12 +1,10 @@
 #!/bin/bash
 
 ###
-#
 #	Usage: ./run_zharf.sh <program to fuzz> <input dir> <output dir> <init input file>
+#	License: MIT
 #
-#
-#
-#
+#	By: Luciano Remes
 ###
 
 zcc -o program.elf $1 && \
