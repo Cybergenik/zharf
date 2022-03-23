@@ -1,0 +1,14 @@
+Structural Questions:
+	- Shared memory allocation? (shmat)
+		- Why do we statically allocate only 512kb?
+		- Can we use Huge Pages?
+		- Can we use pre-loading?
+
+Implementation Questions:
+	- Adjacent block_info for tree?
+	- zcc:
+		- is it just a wrapper for gcc?
+		- full gcc compilation support?
+
+
+test@hello.com 9

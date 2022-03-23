@@ -1,0 +1,111 @@
+GLOBAL STATE:
+	- u8 fserv_active = 0
+	- void * shm
+	- u64 *global_lock
+	lib variables:
+		- struct tree *trace_tree
+		- struct block_info *block
+		- struct node *node_pool
+		- struct child_ptr *child_pool ( just a linked-list of children for the parent)
+		- struct node *current_node
+	shared memory variables:
+		- long *cur_block
+		- u64 *cur_node_in_pool
+		- u64 *cur_child_in_pool
+
+FUNC:
+	void zrep:
+		- strcpy
+		- strcat
+		- va_list
+		- va_start
+		- vprintf
+		- va_end
+
+	void zexit:
+		- strcpy
+		- strcat
+		- va_list
+		- va_start
+		- vprintf
+		- va_end
+		- exit
+
+	void save_memory:
+		- sprintf
+		- fopen
+		- zexit
+		- fwrite
+		- printf
+		- fclose
+
+	void force_write_exit:
+		- open
+		- sprintf
+		- strcat
+		- va_list
+		- va_start
+		- vsprintf
+		- va_end
+		- save_memory
+		- fflush
+		- write
+		- exit
+		- printf
+
+	struct node *ret_new_node: (can be merged into alloc_node?)
+		* grab next node from node_pool *
+	
+	struct node *alloc_node:
+		* creates new struct node ptr, assigns id *
+		- ret_new_node
+	
+	struct child_ptr *alloc_child_ptr:
+		* grab next child_ptr from child_pool, set next child to null, set child node *
+
+	struct block_info *search:
+		* binary search over blocks using id *
+	
+	struct child_ptr *add_child:
+		* add child to parent's ll of children *
+	
+	struct node *add_node: (main juice)
+		- alloc_node
+		- zrep
+		- search
+		- add_child
+		- TERMINATE (macro to exit)
+	
+	void sigf_handler:
+		- backtrace
+		- backtrace_symbols
+		- fflush
+		- printf
+		- TERMINATE
+	
+	int ulock:
+		- asm volatile
+	
+	void log_block:
+		- add_node
+		- add_node_locked
+
+	u8 run_fserver:
+		* initialize global vars in from shared memory pointer, run infinite loop, fork -> log, repeat*
+		- read
+		- zexit
+		- shmat (iiiiiinteresting)
+		- printf
+		- write
+		- zrep
+		- fork
+		- waitpid
+		- close
+	
+	int lib_zh_entry:
+		* Entry point for fuzzer *
+		- fcntl
+		- zrep
+		- run_fserver
+		- log_block
+
